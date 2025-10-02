@@ -1,0 +1,58 @@
+import { useState, useRef } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+
+export default function StopwatchApp() {
+  const [time, setTime] = useState(0); // in ms
+  const [isRunning, setIsRunning] = useState(false);
+  const intervalRef = useRef(null);
+
+  const startTimer = () => {
+    if (isRunning) return;
+    setIsRunning(true);
+    intervalRef.current = setInterval(() => {
+      setTime((prev) => prev + 10); // update every 10ms
+    }, 10);
+  };
+
+  const pauseTimer = () => {
+    clearInterval(intervalRef.current);
+    setIsRunning(false);
+  };
+
+  const resetTimer = () => {
+    clearInterval(intervalRef.current);
+    setIsRunning(false);
+    setTime(0);
+  };
+
+  const formatTime = (ms) => {
+    const minutes = Math.floor(ms / 60000);
+    const seconds = Math.floor((ms % 60000) / 1000);
+    const milliseconds = Math.floor((ms % 1000) / 10);
+    return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}.${String(milliseconds).padStart(2, "0")}`;
+  };
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 p-6">
+      <Card className="w-full max-w-md shadow-xl rounded-2xl">
+        <CardContent className="p-6 flex flex-col items-center">
+          <h1 className="text-2xl font-bold mb-6">⏱ Stopwatch</h1>
+          <div className="text-4xl font-mono mb-6">{formatTime(time)}</div>
+
+          <div className="flex gap-4">
+            <Button onClick={startTimer} disabled={isRunning}>
+              Start
+            </Button>
+            <Button onClick={pauseTimer} variant="outline">
+              Pause
+            </Button>
+            <Button onClick={resetTimer} variant="destructive">
+              Reset
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
